@@ -6,7 +6,8 @@ using AngleSharp.Html.Parser;
 
 var branches = new[] { "cfc", "district5" };
 var keyword = Environment.GetEnvironmentVariable("MOVIE_KEYWORD") ?? "doomsday";
-var wantedExperiences = (Environment.GetEnvironmentVariable("EXPERIENCES") ?? "Standard,Premiere")
+// Hall names aren't fixed ("Standard", "Standard & Deluxe", ...), so alert on anything except these.
+var excludedExperiences = (Environment.GetEnvironmentVariable("EXCLUDED_EXPERIENCES") ?? "ScreenX,Screen X,4DX")
     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 // Pages known ahead of time, probed even if they drop off the homepage listing.
 var knownSlugs = new[] { "avengers-doomsday-infinity-vision-sx-4dx" };
@@ -62,7 +63,7 @@ foreach (var branch in branches)
                 var experience = block.QuerySelector(".ex_stand")?.TextContent.Trim() ?? "";
                 var times = block.QuerySelectorAll("li a").Select(t => t.TextContent.Trim()).Where(t => t.Length > 0).ToList();
                 Console.WriteLine($"  {day} {experience}: {string.Join(", ", times)}");
-                if (times.Count > 0 && wantedExperiences.Any(w => experience.Contains(w, StringComparison.OrdinalIgnoreCase)))
+                if (times.Count > 0 && !excludedExperiences.Any(x => experience.Contains(x, StringComparison.OrdinalIgnoreCase)))
                     found.Add(new Showing(branch, experience, day, times, movieUrl));
             }
         }
