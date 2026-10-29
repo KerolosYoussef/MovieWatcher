@@ -2,7 +2,8 @@ name: Watch Avengers Doomsday
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    # Off the round minutes: GitHub's scheduler is busiest at :00/:10 and skips runs then.
+    - cron: '3-59/10 * * * *'
   workflow_dispatch:
     inputs:
       test:
